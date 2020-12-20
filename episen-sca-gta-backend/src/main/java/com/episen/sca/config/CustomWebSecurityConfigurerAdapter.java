@@ -23,8 +23,8 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
                 .withUser("editor").password(passwordEncoder().encode("pwd"))
                 .roles("EDITOR");
         auth.inMemoryAuthentication()
-                .withUser("proofreader").password(passwordEncoder().encode("pwd"))
-                .roles("PROOFREADER");
+                .withUser("reader").password(passwordEncoder().encode("pwd"))
+                .roles("READER");
     }
 
     @Override
@@ -36,9 +36,8 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/**/public").permitAll()
-                .antMatchers("/api/**/user").hasRole("USER")
-                .antMatchers("/api/**/admin").hasRole("ADMIN")
+                .antMatchers("/api/**/editor").hasRole("EDITOR")
+                .antMatchers("/api/**/reader").authenticated()
                 .and()
                 .httpBasic()
                 .and()

@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(ProofReaderEndpoint.PATH)
+@RequestMapping(ReaderEndpoint.PATH)
 @Slf4j
-public class ProofReaderEndpoint {
+public class ReaderEndpoint {
 
-    public static final String PATH = "/api/v1/proofreader";
+    public static final String PATH = "/api/v1/reader";
 
     @GetMapping
     public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
