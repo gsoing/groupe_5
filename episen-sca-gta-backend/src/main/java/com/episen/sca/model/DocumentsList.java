@@ -1,18 +1,31 @@
 package com.episen.sca.model;
 
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Builder
+@Data
+@NoArgsConstructor
 public class DocumentsList extends PageData  {
 
   private List<DocumentSummary> data = null;
 
-  public DocumentsList data(List<DocumentSummary> data) {
+  public DocumentsList(int page, int nbElements, List<DocumentSummary> data) {
+    super(page, nbElements);
+    this.data = data;
+  }
+
+  /*public DocumentsList data(List<DocumentSummary> data) {
     this.data = data;
     return this;
-  }
+  }*/
+
 
   public DocumentsList addDataItem(DocumentSummary dataItem) {
     if (this.data == null) {

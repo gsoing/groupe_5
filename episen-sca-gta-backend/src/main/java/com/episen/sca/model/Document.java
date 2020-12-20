@@ -1,15 +1,20 @@
 package com.episen.sca.model;
 
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 
-public class Document extends DocumentSummary  {
+public class Document extends DocumentSummary {
   private String creator = null;
 
   private String editor = null;
 
   private String body = null;
+
+  Document(String documentId, OffsetDateTime created, OffsetDateTime updated, String title) {
+    super(documentId, created, updated, title);
+  }
 
   public enum StatusEnum {
     CREATED("CREATED"),
@@ -42,6 +47,15 @@ public class Document extends DocumentSummary  {
   public Document creator(String creator) {
     this.creator = creator;
     return this;
+  }
+
+  public DocumentSummary toSummary(){
+    DocumentSummary documentSummary = null;
+    documentSummary.setTitle(title);
+    documentSummary.setCreated(created);
+    documentSummary.setDocumentId(documentId);
+    documentSummary.setUpdated(updated);
+    return documentSummary;
   }
 
   

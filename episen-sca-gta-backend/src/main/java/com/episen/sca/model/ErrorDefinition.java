@@ -1,10 +1,12 @@
 package com.episen.sca.model;
 
+import lombok.Builder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
+@Builder
 public class ErrorDefinition   {
 
   public enum ErrorTypeEnum {
@@ -12,7 +14,7 @@ public class ErrorDefinition   {
     
     FUNCTIONAL("FUNCTIONAL");
 
-    private String value;
+    public String value;
 
     ErrorTypeEnum(String value) {
       this.value = value;
@@ -32,9 +34,11 @@ public class ErrorDefinition   {
     }
   }
 
-  private ErrorTypeEnum errorType = null;
 
-  private List<ErrorDefinitionErrors> errors = null;
+
+  public ErrorTypeEnum errorType = null;
+
+  public List<ErrorDefinitionErrors> errors = null;
 
   public ErrorDefinition errorType(ErrorTypeEnum errorType) {
     this.errorType = errorType;

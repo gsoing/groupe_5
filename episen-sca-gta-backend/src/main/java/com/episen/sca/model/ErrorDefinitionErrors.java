@@ -9,6 +9,11 @@ public class ErrorDefinitionErrors   {
 
   private String errorMessage = null;
 
+  public ErrorDefinitionErrors(String errorCode, String errorMessage) {
+    this.errorCode = errorCode;
+    this.errorMessage = errorMessage;
+  }
+
   public ErrorDefinitionErrors errorCode(String errorCode) {
     this.errorCode = errorCode;
     return this;

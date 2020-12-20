@@ -1,18 +1,20 @@
 package com.episen.sca.model;
+import lombok.Builder;
+
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-
+@Builder
 public class DocumentSummary   {
 
-  private String documentId = null;
+  protected String documentId = null;
 
-  private OffsetDateTime created = null;
+  protected OffsetDateTime created = null;
 
 
-  private OffsetDateTime updated = null;
+  protected OffsetDateTime updated = null;
 
-  private String title = null;
+  protected String title = null;
 
   public DocumentSummary documentId(String documentId) {
     this.documentId = documentId;

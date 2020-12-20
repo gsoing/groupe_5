@@ -4,12 +4,18 @@ import com.episen.sca.dto.UserDto;
 import com.episen.sca.model.Document;
 import com.episen.sca.model.DocumentsList;
 import com.episen.sca.model.Lock;
+import com.episen.sca.service.DocumentService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.stream.Collectors;
 
@@ -20,54 +26,63 @@ public class DocumentController {
 
     public static final String PATH = "/documents";
 
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private DocumentService documentService;
+
     @RequestMapping(
             produces = { "application/json" },
             method = RequestMethod.GET)
-    ResponseEntity<DocumentsList> documentsGet(){
-        //TODO
-        return new ResponseEntity<DocumentsList>(HttpStatus.ACCEPTED);
+    ResponseEntity<DocumentsList> documentsGet( @PageableDefault(page = 0, size = 20) Pageable pageable,
+                                                UriComponentsBuilder uriComponentsBuilder){
+        DocumentsList pageResult = documentService.documentsGet(pageable);
+        return ResponseEntity.ok(pageResult);
     }
+
+
     @RequestMapping(
             consumes = { "application/json" },
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<DocumentsList> documentsPost(@RequestBody Document document){
-        //TODO
-        return new ResponseEntity<DocumentsList>(HttpStatus.ACCEPTED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(documentService.createDocument(document));
     }
 
     @RequestMapping(value = "/{documentId}",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    ResponseEntity<Document> documentsDocumentIdGet(@PathVariable("documentId") String documentId){
-        //TODO
-        return new ResponseEntity<Document>(HttpStatus.ACCEPTED);
+    ResponseEntity<Object> documentsDocumentIdGet(@PathVariable("documentId") String documentId){
+        Document document = documentService.getDocumentById(documentId);
+        return ResponseEntity.ok(document);
     }
+
 
     @RequestMapping(value = "/{documentId}",
             consumes = { "application/json" },
             produces = { "application/json" },
             method = RequestMethod.PUT)
-    ResponseEntity<Document> documentsDocumentIdPut(@PathVariable("documentId") String documentId, @RequestBody Document document){
-        //TODO
-        return new ResponseEntity<Document>(HttpStatus.ACCEPTED);
+    ResponseEntity<Object> documentsDocumentIdPut(@PathVariable("documentId") String documentId, @RequestBody Document document){
+        Document updatedDocument = documentService.updateDocumentById(documentId, document);
+        return ResponseEntity.ok(updatedDocument);
     }
 
     @RequestMapping(value = "/{documentId}/status",
             consumes = { "text/plain" },
             produces = { "application/json" },
             method = RequestMethod.PUT)
-    ResponseEntity<Document> documentsDocumentIdStatusPut(@PathVariable("documentId") String documentId, @RequestBody Document.StatusEnum document){
-        //TODO
-        return new ResponseEntity<Document>(HttpStatus.ACCEPTED);
+    ResponseEntity documentsDocumentIdStatusPut(@PathVariable("documentId") String documentId, @RequestBody Document.StatusEnum documentStatus){
+        documentService.updateDocumentStatusById(documentId,documentStatus);
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(
             value="/{documentId}/lock",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    ResponseEntity<Lock> documentsDocumentIdLockGet(){
-        //TODO
+    ResponseEntity<Lock> documentsDocumentIdLockGet(@PathVariable("documentId") String documentId){
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 
@@ -77,7 +92,6 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.PUT)
     ResponseEntity<Lock> documentsDocumentIdLockPut(@PathVariable("documentId") String documentId, @RequestBody Lock lock){
-        //TODO
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 
@@ -87,7 +101,6 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.DELETE)
     ResponseEntity<Lock> documentsDocumentIdLockDelete(@PathVariable("documentId") String documentId){
-        //TODO
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 
