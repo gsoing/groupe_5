@@ -24,6 +24,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<DocumentsList> documentsGet(){
+        //TODO
         return new ResponseEntity<DocumentsList>(HttpStatus.ACCEPTED);
     }
     @RequestMapping(
@@ -31,6 +32,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<DocumentsList> documentsPost(@RequestBody Document document){
+        //TODO
         return new ResponseEntity<DocumentsList>(HttpStatus.ACCEPTED);
     }
 
@@ -38,6 +40,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<Document> documentsDocumentIdGet(@PathVariable("documentId") String documentId){
+        //TODO
         return new ResponseEntity<Document>(HttpStatus.ACCEPTED);
     }
 
@@ -46,6 +49,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.PUT)
     ResponseEntity<Document> documentsDocumentIdPut(@PathVariable("documentId") String documentId, @RequestBody Document document){
+        //TODO
         return new ResponseEntity<Document>(HttpStatus.ACCEPTED);
     }
 
@@ -54,6 +58,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.PUT)
     ResponseEntity<Document> documentsDocumentIdStatusPut(@PathVariable("documentId") String documentId, @RequestBody Document.StatusEnum document){
+        //TODO
         return new ResponseEntity<Document>(HttpStatus.ACCEPTED);
     }
 
@@ -62,6 +67,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<Lock> documentsDocumentIdLockGet(){
+        //TODO
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 
@@ -71,6 +77,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.PUT)
     ResponseEntity<Lock> documentsDocumentIdLockPut(@PathVariable("documentId") String documentId, @RequestBody Lock lock){
+        //TODO
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 
@@ -80,9 +87,11 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.DELETE)
     ResponseEntity<Lock> documentsDocumentIdLockDelete(@PathVariable("documentId") String documentId){
+        //TODO
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 
+    //TODO SUPPRESSWARNING
     @GetMapping
     public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
         return ResponseEntity
@@ -97,7 +106,7 @@ public class DocumentController {
                                 )
                                 .build());
     }
-
+    //TODO SUPPRESSWARNING
     @GetMapping
     @RequestMapping("/auth")
     public ResponseEntity<UserDto> getCurrentUser2(Authentication authentication) {
