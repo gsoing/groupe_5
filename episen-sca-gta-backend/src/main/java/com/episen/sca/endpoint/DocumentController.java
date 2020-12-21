@@ -5,6 +5,7 @@ import com.episen.sca.model.Document;
 import com.episen.sca.model.DocumentsList;
 import com.episen.sca.model.Lock;
 import com.episen.sca.service.DocumentService;
+import com.episen.sca.service.LockService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 public class DocumentController {
 
     public static final String PATH = "/documents";
+    @Autowired
+    private LockService lockService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -36,7 +40,9 @@ public class DocumentController {
             method = RequestMethod.GET)
     ResponseEntity<DocumentsList> documentsGet( @PageableDefault(page = 0, size = 20) Pageable pageable,
                                                 UriComponentsBuilder uriComponentsBuilder){
+        log.info("GET /documents :  (" + pageable.getPageNumber() + "), pageSize(" + pageable.getPageSize() + ")");
         DocumentsList pageResult = documentService.documentsGet(pageable);
+
         return ResponseEntity.ok(pageResult);
     }
 
@@ -46,6 +52,7 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<DocumentsList> documentsPost(@RequestBody Document document){
+        log.info("POST /documents : document " + document.toString());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(documentService.createDocument(document));
@@ -55,52 +62,70 @@ public class DocumentController {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<Object> documentsDocumentIdGet(@PathVariable("documentId") String documentId){
+        log.info("GET /documents/{documentId} :  document id : " + documentId);
         Document document = documentService.getDocumentById(documentId);
-        return ResponseEntity.ok(document);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .eTag(document.getEtag())
+                .body(document);
     }
 
 
-    @RequestMapping(value = "/{documentId}",
-            consumes = { "application/json" },
-            produces = { "application/json" },
-            method = RequestMethod.PUT)
-    ResponseEntity<Object> documentsDocumentIdPut(@PathVariable("documentId") String documentId, @RequestBody Document document){
-        Document updatedDocument = documentService.updateDocumentById(documentId, document);
-        return ResponseEntity.ok(updatedDocument);
+    @PutMapping(value = "/{documentId}")
+    ResponseEntity<Object> documentsDocumentIdPut(@PathVariable("documentId") String documentId,
+                                                  @RequestBody Document document,
+                                                  @RequestHeader(value = "etag", defaultValue = "0") String etag){
+        log.info("PUT /documents/{documentId} : document id '" + documentId + "' and document '" + document.toString());
+        log.info("PUT /documents/{documentId} : etag: " + etag);
+
+        Document updatedDocument = documentService.updateDocumentById(documentId, document, etag);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .eTag(updatedDocument.getEtag())
+                .body(updatedDocument);
     }
 
     @RequestMapping(value = "/{documentId}/status",
             consumes = { "text/plain" },
             produces = { "application/json" },
             method = RequestMethod.PUT)
-    ResponseEntity documentsDocumentIdStatusPut(@PathVariable("documentId") String documentId, @RequestBody Document.StatusEnum documentStatus){
-        documentService.updateDocumentStatusById(documentId,documentStatus);
+    ResponseEntity documentsDocumentIdStatusPut(@PathVariable("documentId") String documentId, @RequestBody String documentStatus){
+        log.info("PUT /documents/{documentId}/status : document id '" + documentId + "' and status '" + documentStatus + "'");
+        documentService.updateDocumentStatusById(documentId, Document.StatusEnum.fromValue(documentStatus));
         return ResponseEntity.noContent().build();
     }
+
 
     @RequestMapping(
             value="/{documentId}/lock",
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<Lock> documentsDocumentIdLockGet(@PathVariable("documentId") String documentId){
-        return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
+        log.info("GET /documents/{documentId}/lock :  document id :" + documentId);
+        Optional<Lock> lock = lockService.getLock(documentId);
+        if(lock.isPresent()) {
+            log.info("Get Lock Document:"+ lock.toString());
+            return ResponseEntity.status(HttpStatus.OK).body(lock.get());
+        }
+        else
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
-    @RequestMapping(
-            value="/{documentId}/lock",
-            consumes = { "application/json" },
-            produces = { "application/json" },
-            method = RequestMethod.PUT)
-    ResponseEntity<Lock> documentsDocumentIdLockPut(@PathVariable("documentId") String documentId, @RequestBody Lock lock){
-        return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
+    @PutMapping(
+            value="/{documentId}/lock")
+    ResponseEntity<Lock> documentsDocumentIdLockPut(@PathVariable("documentId") String documentId){
+        log.info("PUT /documents/{documentId}/lock : document id '" + documentId );
+        Lock lock = lockService.lock(documentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(lock);
     }
 
-    @RequestMapping(
-            value="/{documentId}/lock",
-            consumes = { "application/json" },
-            produces = { "application/json" },
-            method = RequestMethod.DELETE)
+    @DeleteMapping(
+            value="/{documentId}/lock")
     ResponseEntity<Lock> documentsDocumentIdLockDelete(@PathVariable("documentId") String documentId){
+        log.info("DELETE /documents/{documentId}/lock :  document id '" + documentId);
+        lockService.unLock(documentId);
         return new ResponseEntity<Lock>(HttpStatus.ACCEPTED);
     }
 

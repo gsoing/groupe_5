@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 @Data
-@Builder
 @NoArgsConstructor
 public class PageData   {
   protected int page;

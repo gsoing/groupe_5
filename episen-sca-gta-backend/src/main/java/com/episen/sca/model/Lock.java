@@ -1,10 +1,17 @@
 package com.episen.sca.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Lock   {
-
+  String documentId;
   private String owner = null;
   private OffsetDateTime created = null;
 

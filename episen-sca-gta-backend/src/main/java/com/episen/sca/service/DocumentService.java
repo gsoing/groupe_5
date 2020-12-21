@@ -1,11 +1,13 @@
 package com.episen.sca.service;
 
 import com.episen.sca.exception.CannotBeModifiedException;
+import com.episen.sca.exception.ForbiddenException;
 import com.episen.sca.exception.NotFoundException;
 import com.episen.sca.model.Document;
 import com.episen.sca.model.DocumentSummary;
 import com.episen.sca.model.DocumentsList;
 import com.episen.sca.repository.DocumentRepository;
+import com.episen.sca.repository.LockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,10 @@ public class DocumentService {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private LockRepository lockRepository;
+
 
     public DocumentsList documentsGet(Pageable pageable) {
         Page<Document> pages = documentRepository.findAll(pageable);
@@ -57,10 +63,17 @@ public class DocumentService {
     public Document getDocumentById(String documentId) {
         return documentRepository.findById(documentId).orElseThrow(NotFoundException::new);
     }
-    public Document updateDocumentById(String documentId, Document document) {
+    public Document updateDocumentById(String documentId, Document document, String etag) {
         Document toUpdateDocument = documentRepository.findById(documentId).orElseThrow(NotFoundException::new);
+        //checking pessimistic lock owner
+        lockRepository.findByDocumentId(documentId).ifPresent(lock -> {
+            if (!lock.getOwner().equals(getUserDetails().getUsername()))
+                throw new ForbiddenException();
+        });
+        //checking if Document is already validated
         if (toUpdateDocument.getStatus().equals(Document.StatusEnum.VALIDATED))
             throw new CannotBeModifiedException();
+
         toUpdateDocument.setTitle(document.getTitle());
         toUpdateDocument.setBody(document.getBody());
         toUpdateDocument.setUpdated(OffsetDateTime.now());
@@ -69,10 +82,13 @@ public class DocumentService {
     }
     public void updateDocumentStatusById(String documentId, Document.StatusEnum documentStatus) {
         Document toUpdateDocument = documentRepository.findById(documentId).orElseThrow(NotFoundException::new);
+
         if (toUpdateDocument.getStatus().equals(Document.StatusEnum.VALIDATED))
             throw new CannotBeModifiedException();
         toUpdateDocument.setStatus(documentStatus);
+        documentRepository.save(toUpdateDocument);
         return;
+
     }
     private UserDetails getUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -1,16 +1,22 @@
 package com.episen.sca.model;
 
 
+
+import lombok.Data;
+import org.springframework.data.annotation.Transient;
+
+import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 
-public class Document extends DocumentSummary {
-  private String creator = null;
-
-  private String editor = null;
-
-  private String body = null;
+@Data
+public class Document extends DocumentSummary implements Serializable {
+  private String creator;
+  private String editor;
+  private String body;
+  private StatusEnum status;
+  @Transient
+  private String etag;
 
   Document(String documentId, OffsetDateTime created, OffsetDateTime updated, String title) {
     super(documentId, created, updated, title);
@@ -18,7 +24,7 @@ public class Document extends DocumentSummary {
 
   public enum StatusEnum {
     CREATED("CREATED"),
-    
+
     VALIDATED("VALIDATED");
 
     private String value;
@@ -42,114 +48,12 @@ public class Document extends DocumentSummary {
     }
   }
 
-  private StatusEnum status = null;
-
-  public Document creator(String creator) {
-    this.creator = creator;
-    return this;
-  }
-
-  public DocumentSummary toSummary(){
-    DocumentSummary documentSummary = null;
-    documentSummary.setTitle(title);
-    documentSummary.setCreated(created);
-    documentSummary.setDocumentId(documentId);
-    documentSummary.setUpdated(updated);
+  public DocumentSummary toSummary() {
+    DocumentSummary documentSummary = new DocumentSummary(title,created,updated,documentId);
     return documentSummary;
   }
 
-  
-  public String getCreator() {
-    return creator;
-  }
 
-  public void setCreator(String creator) {
-    this.creator = creator;
-  }
-
-  public Document editor(String editor) {
-    this.editor = editor;
-    return this;
-  }
-
-  public String getEditor() {
-    return editor;
-  }
-
-  public void setEditor(String editor) {
-    this.editor = editor;
-  }
-
-  public Document body(String body) {
-    this.body = body;
-    return this;
-  }
-
-  
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public Document status(StatusEnum status) {
-    this.status = status;
-    return this;
-  }
-
-  public StatusEnum getStatus() {
-    return status;
-  }
-
-  public void setStatus(StatusEnum status) {
-    this.status = status;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Document document = (Document) o;
-    return Objects.equals(this.creator, document.creator) &&
-        Objects.equals(this.editor, document.editor) &&
-        Objects.equals(this.body, document.body) &&
-        Objects.equals(this.status, document.status) &&
-        super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(creator, editor, body, status, super.hashCode());
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class Document {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    creator: ").append(toIndentedString(creator)).append("\n");
-    sb.append("    editor: ").append(toIndentedString(editor)).append("\n");
-    sb.append("    body: ").append(toIndentedString(body)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
 }
+
+
