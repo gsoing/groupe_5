@@ -30,6 +30,7 @@ public class DocumentController {
     @Autowired
     private LockService lockService;
 
+    // Oui c'est pour ???
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -41,6 +42,7 @@ public class DocumentController {
     ResponseEntity<DocumentsList> documentsGet( @PageableDefault(page = 0, size = 20) Pageable pageable,
                                                 UriComponentsBuilder uriComponentsBuilder){
         log.info("GET /documents :  (" + pageable.getPageNumber() + "), pageSize(" + pageable.getPageSize() + ")");
+        // Vérifier la taille max de la page aurait été sympa
         DocumentsList pageResult = documentService.documentsGet(pageable);
 
         return ResponseEntity.ok(pageResult);
@@ -51,8 +53,10 @@ public class DocumentController {
             consumes = { "application/json" },
             produces = { "application/json" },
             method = RequestMethod.POST)
+    // Pourquoi retourner une liste ici ????
     ResponseEntity<DocumentsList> documentsPost(@RequestBody Document document){
         log.info("POST /documents : document " + document.toString());
+        // On aurait pu retourner l'etag lors de la création
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(documentService.createDocument(document));
@@ -100,6 +104,7 @@ public class DocumentController {
             value="/{documentId}/lock",
             produces = { "application/json" },
             method = RequestMethod.GET)
+    // Si on veut être complet il faudrait vérifier si le document existe
     ResponseEntity<Lock> documentsDocumentIdLockGet(@PathVariable("documentId") String documentId){
         log.info("GET /documents/{documentId}/lock :  document id :" + documentId);
         Optional<Lock> lock = lockService.getLock(documentId);

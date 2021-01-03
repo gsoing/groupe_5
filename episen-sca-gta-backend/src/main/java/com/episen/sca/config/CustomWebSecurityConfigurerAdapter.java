@@ -37,6 +37,7 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
                 .and()
                 .authorizeRequests()
                 .antMatchers("/documents/**").hasAnyRole("EDITOR","READER")
+                // Un peu violent cela veut dire que seul le reader peut utiliser la ressource status, alors qu'on pourrait autoriser la lecture
                 .antMatchers("/documents/{documentId}/status").hasRole("READER")
                 .and()
                 .httpBasic()

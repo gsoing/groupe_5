@@ -38,6 +38,10 @@ public class DocumentService {
     public DocumentsList fromPageToDocumentsList(Page page) {
         DocumentsList results = new DocumentsList();
         List<Document> docs = page.getContent();
+
+        /**
+         * On fait un peut mieux maintenant Page<DocumentSummary> newPage = page.map(Document::toSummary);
+         */
         ArrayList<DocumentSummary> sums = new ArrayList<>();
         for (Document d: docs) {
             sums.add(d.toSummary());
@@ -63,6 +67,10 @@ public class DocumentService {
     public Document getDocumentById(String documentId) {
         return documentRepository.findById(documentId).orElseThrow(NotFoundException::new);
     }
+
+    /**
+     * Passer l'etag c'est bien, l'utiliser c'est mieux
+     */
     public Document updateDocumentById(String documentId, Document document, String etag) {
         Document toUpdateDocument = documentRepository.findById(documentId).orElseThrow(NotFoundException::new);
         //checking pessimistic lock owner

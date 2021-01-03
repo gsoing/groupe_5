@@ -31,7 +31,18 @@ public class LockService {
 
     public Lock lock(String documentId) {
         documentRepository.findById(documentId).orElseThrow(NotFoundException::new);
+
+        /**
+         *         En plus simple
+         *         Optional<Lock> optionalLock = lockRepository.findByDocumentId(documentId);
+         *         if(optionalLock.isPresent()) {
+         *             Lock lock = optionalLock.get();
+         *         }
+         */
+
+
         if(lockRepository.findByDocumentId(documentId).isPresent()) {
+            // Pkoi refaire un appel a find ici ???, les appels en base c'est couteux
             Lock lock = lockRepository.findByDocumentId(documentId).get();
             log.info("Lock Document:"+ lock.toString());
             throw LockException.DEFAULT;
@@ -44,6 +55,7 @@ public class LockService {
     }
 
     public void unLock(String documentId) {
+        // ou juste on fait rien, supprimer un truc qui n'existe pas ca ne fait rien
         Lock lock = lockRepository.findByDocumentId(documentId).orElseThrow(NotFoundException::new);
         if(lock.getOwner().equals(getUserDetails().getUsername())) {
             lockRepository.deleteBydocumentId(documentId);

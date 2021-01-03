@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+/**
+ * il manque les exceptions que peut renvoyer spring
+ */
 @ControllerAdvice
 public class RestControllerAdvice {
     @ExceptionHandler({NotFoundException.class, CannotBeModifiedException.class,
